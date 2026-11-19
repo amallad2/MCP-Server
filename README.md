@@ -20,13 +20,15 @@ El que canvia la IA ho veu l'app, i al revés, perquè totes dues fan servir
 | `servidor/servidor_tasques.py` | Servidor MCP: 6 eines, 1 recurs (`tasques://resum`), registre de crides |
 | `servidor/api_rest.py` | API REST (FastAPI) per a l'app Android |
 | `tests/test_tasques.py` | Tests amb `pytest` de dades, eines MCP, API i dades compartides |
+| `agent/agent_ollama.py` | Agent que connecta un model d'Ollama amb el servidor MCP |
+| `tests/test_agent.py` | Tests del bucle de l'agent amb un Ollama simulat |
 
 ## Posar-ho en marxa
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-python -m pytest            # 19 tests
+python -m pytest            # 22 tests
 ```
 
 La base de dades es crea sola a `servidor/tasques.db` en arrencar el servidor
@@ -77,6 +79,23 @@ d'Android, l'ordinador és `http://10.0.2.2:8000`.
 | GET | `/categories`, `/estadistiques` | Dades auxiliars |
 
 Errors: `400` amb `{"detail": "..."}` si l'entrada no és vàlida, `404` si no existeix.
+
+### Agent amb Ollama (sense pagar cap API)
+
+Ollama no parla MCP: `agent/agent_ollama.py` fa de pont. Arrenca el servidor
+MCP, li demana les eines, les passa a Ollama i reenvia cada crida del model
+al servidor fins que el model dona la resposta final.
+
+```bash
+ollama pull qwen3                      # cal un model que suporti eines
+python agent/agent_ollama.py           # mode conversa
+python agent/agent_ollama.py "Afegeix una tasca per demà i digue'm quantes en tinc pendents"
+```
+
+Variables opcionals: `OLLAMA_HOST` (per defecte `http://localhost:11434`),
+`OLLAMA_MODEL` (per defecte `qwen3`) i `TASQUES_DB`. Les crides a eines
+es mostren per stderr amb `⚙`. Els tests (`tests/test_agent.py`) proven el
+bucle amb el servidor MCP real i un Ollama simulat.
 
 ## Notes per a l'SDK `mcp` 2.x
 
