@@ -112,7 +112,7 @@ class Agent:
 
 async def main(peticions: list[str], http: httpx.AsyncClient | None = None) -> None:
     host = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
-    model = os.environ.get("OLLAMA_MODEL", "qwen3")
+    model = os.environ.get("OLLAMA_MODEL", "gemma4")
     params = StdioServerParameters(
         command=sys.executable, args=[str(SERVIDOR)], env=dict(os.environ)
     )
